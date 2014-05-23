@@ -1,3 +1,4 @@
+
 #ifndef MPU6050_H
 #define MPU6050_H
 
@@ -33,7 +34,21 @@
 
 #define MPU6050_WHO_AM_I 0x75
 
+#define ACCEL_CONFIG 0x1C
 
+#define AF_SEL_ACCEL_RANGE_2G 0 << 3
+#define AF_SEL_ACCEL_RANGE_4G 1 << 3
+#define AF_SEL_ACCEL_RANGE_8G 2 << 3
+#define AF_SEL_ACCEL_RANGE_16G 3 << 3
+
+
+
+
+
+// function definitions
+int mpu6050_init(const char *i2c_dev,int mpu6050_addr);
+void mpu6050_deinit(int i2c_path ) ;
+void mpu6050_write_register(int fd,uint8_t reg,uint8_t value) ;
+uint8_t mpu6050_read_register(int fd, uint8_t reg);
+int16_t mpu6050_read_register_pair(int fd,uint8_t reg);
 #endif
-
-
