@@ -25,7 +25,7 @@ all: $(SOURCES) $(EXECUTABLE)
 $(EXECUTABLE): $(C_OBJECTS) $(CPP_OBJECTS)
 		$(CCP) $(LDFLAGS) $(C_OBJECTS)  $(CPP_OBJECTS) -o $@
 clean:
-	$(RM) *.o
+	$(RM) $(C_OBJECTS)
 	$(RM) $(EXECUTABLE)
 .cpp.o:
 		$(CCP) $(CPPFLAGS) $< -o $@

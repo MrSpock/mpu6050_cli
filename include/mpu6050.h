@@ -43,6 +43,15 @@
 
 
 
+struct MPU6050 {
+    float accel_x;
+    float accel_y;
+    float accel_z;
+    int16_t gyro_x;
+    int16_t gyro_y;
+    int16_t gyro_z;
+    float temp;
+};
 
 
 // function definitions
