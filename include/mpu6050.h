@@ -55,9 +55,11 @@ struct MPU6050 {
 
 
 // function definitions
-int mpu6050_init(const char *i2c_dev,int mpu6050_addr);
-void mpu6050_deinit(int i2c_path ) ;
+int mpu6050_init(int bus_no,int mpu6050_addr);
+void mpu6050_deinit(int bus_no);
 void mpu6050_write_register(int fd,uint8_t reg,uint8_t value) ;
 uint8_t mpu6050_read_register(int fd, uint8_t reg);
 int16_t mpu6050_read_register_pair(int fd,uint8_t reg);
+uint16_t mpu6050_select_range(int i2c_handle,uint16_t range);
+
 #endif

@@ -10,26 +10,29 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "mpu6050.h"
+#include "lsquaredc.h"
 
-int mpu6050_init(const char *i2c_dev,int mpu6050_addr) {
+int mpu6050_init(int bus_no,int mpu6050_addr) {
     int i2c_mp6050;
-if ((i2c_mp6050 = open(i2c_dev, O_RDWR)) < 0) {
-    /* ERROR HANDLING: you can check errno to see what went wrong */
-    perror("Failed to open the i2c bus");
-    exit(EXIT_FAILURE);
-}
-printf("Trying to connect to MPU6050 at address 0x%x\n",mpu6050_addr);
-if (ioctl(i2c_mp6050, I2C_SLAVE, mpu6050_addr) < 0) {
-    printf("Failed to acquire bus access and/or talk to slave at address 0x%x.\n",mpu6050_addr);
-    /* ERROR HANDLING; you can check errno to see what went wrong */
-    exit(1);
+    i2c_mp6050 = i2c_open(bus_no);
+// if ((i2c_mp6050 = open(i2c_dev, O_RDWR)) < 0) {
+//     /* ERROR HANDLING: you can check errno to see what went wrong */
+//     perror("Failed to open the i2c bus");
+//     exit(EXIT_FAILURE);
+// }
+// printf("Trying to connect to MPU6050 at address 0x%x\n",mpu6050_addr);
+ if (ioctl(i2c_mp6050, I2C_SLAVE, mpu6050_addr) < 0) {
+     printf("Failed to acquire bus access and/or talk to slave at address 0x%x.\n",mpu6050_addr);
+     /* ERROR HANDLING; you can check errno to see what went wrong */
+     exit(1);
 }
 return i2c_mp6050;
 }
 
-void mpu6050_deinit(int i2c_path) {
-    close(i2c_path);
+void mpu6050_deinit(int i2c_no) {
+    i2c_close(i2c_no);
 }
+
 void mpu6050_write_register(int fd, uint8_t reg,uint8_t value) {
     uint8_t data[2];
     data[0] = reg;
@@ -65,4 +68,29 @@ int16_t mpu6050_read_register_pair(int i2c_mp6050,uint8_t reg) {
     return (data[0]<<8)|data[1];
 }
 
+uint16_t mpu6050_select_range(int i2c_handle,uint16_t range)
+{
+    int sensitivity;
+    mpu6050_write_register(i2c_handle,ACCEL_CONFIG,range);
+    // confirm values for debug
+    fprintf(stderr,"D mpu6050_select_range(): 0x%x\n",mpu6050_read_register(i2c_handle,ACCEL_CONFIG));
+    switch(range) {
+        case AF_SEL_ACCEL_RANGE_2G:
+        sensitivity = 0x4000;
+        break;
+        case AF_SEL_ACCEL_RANGE_4G:
+        sensitivity = 0x2000;
+        break;
+        case AF_SEL_ACCEL_RANGE_8G:
+        sensitivity = 0x1000;
+        break;
+        case AF_SEL_ACCEL_RANGE_16G:
+        sensitivity = 0x800;
+        break;
+        default:
+        sensitivity = 1;
+        break;
+    }
+    return sensitivity;
+};
 
