@@ -18,18 +18,10 @@
 int mpu6050_addr = MPU6050_ADDR_A0_L;
 int fd_mpu6050;
 struct MPU6050 *sensor;
-// register CTRL-C proper handler
-void signal_handler(int signo)
-{
-  if ( signo == SIGINT) {
-    mpu6050_deinit(I2C_BUS);
-    free(sensor);
-  }
-}
 
 int main(int argc, char *argv[])
 {
-  signal(SIGINT, signal_handler);
+
     int whoami = 0;
     // data storage struct
     //struct MPU6050 *sensor;
