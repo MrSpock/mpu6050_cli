@@ -30,12 +30,13 @@ int mpu6050_init(int bus_no, int mpu6050_addr)
     {
       /* ERROR HANDLING: you can check errno to see what went wrong */
       perror("Failed to open the i2c bus");
-      exit(EXIT_FAILURE);
+      return -1;
     }
-  printf("Trying to connect to MPU6050 at address 0x%x\n", mpu6050_addr);
+  //printf("Trying to connect to MPU6050 at address 0x%x\n", mpu6050_addr);
   if (ioctl(i2c_mp6050, I2C_SLAVE, mpu6050_addr) < 0)
     {
       perror("Failed to acquire bus access and/or talk to slave");
+      return -1;
       /* ERROR HANDLING; you can check errno to see what went wrong */
       //exit(1);
     }
@@ -118,3 +119,11 @@ uint16_t mpu6050_select_range(int i2c_handle, uint16_t range)
     }
   return sensitivity;
 };
+
+inline void mpu6050_power_on(int i2c_handle) {
+mpu6050_write_register(i2c_handle,MPU6050_PWR_MGMT_1, 0x0);
+}
+
+inline float mpu6050_get_temperature(int i2c_handle) {
+  return (float) (mpu6050_read_register_pair(i2c_handle,MPU6050_TEMP_OUT_H)) / 340 + 36.53;
+}

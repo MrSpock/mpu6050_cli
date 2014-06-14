@@ -1,4 +1,6 @@
 
+#include <stdint.h>
+
 #ifndef MPU6050_H
 #define MPU6050_H
 
@@ -6,6 +8,10 @@
 
 #define MPU6050_ADDR_A0_L 0x68
 #define MPU6050_ADDR_A0_H 0x69
+
+/*
+MPU6050 register definitions
+ */
 
 #define MPU6050_INT_STATUS 0x3A
 #define MPU6050_ACCEL_XOUT_H 0x3B
@@ -42,7 +48,9 @@
 #define AF_SEL_ACCEL_RANGE_16G 3 << 3
 
 
-
+/*
+structure holding results data
+ */
 struct MPU6050 {
     float accel_x;
     float accel_y;
@@ -55,11 +63,49 @@ struct MPU6050 {
 
 
 // function definitions
+/*
+Initialize connection to IC
+open i2c bus and set I2C_SLAVE mode to device
+ */
 int mpu6050_init(int bus_no,int mpu6050_addr);
+
+/*
+    deinitialize access to device
+    close i2c-bus
+ */
 void mpu6050_deinit(int bus_no);
+
+/*
+write one byte to given register
+ */
 void mpu6050_write_register(int fd,uint8_t reg,uint8_t value) ;
+
+/*
+    read single byte from given register
+ */
 uint8_t mpu6050_read_register(int fd, uint8_t reg);
+
+/*
+    read two bytes from register and return as single 16 bit value
+    first byte is msb and second is lsb in returned 16bit integer
+ */
 int16_t mpu6050_read_register_pair(int fd,uint8_t reg);
+
+/*
+set accelerometer max range
+argument is one of AF_SEL_ACCEL_RANGE_ values
+setting range have impact on accelerometer resolution !
+ */
 uint16_t mpu6050_select_range(int i2c_handle,uint16_t range);
+
+/*
+    bring device from sleep mode
+*/
+void mpu6050_power_on(int i2c_handle);
+
+/*
+get temperature value
+ */
+float mpu6050_get_temperature(int h2c_handle);
 
 #endif
